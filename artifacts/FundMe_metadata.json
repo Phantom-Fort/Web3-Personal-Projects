@@ -6,6 +6,25 @@
 	"output": {
 		"abi": [
 			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "funder",
+						"type": "address"
+					}
+				],
+				"name": "addressToAmountFunded",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "amountFunded",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "fund",
 				"outputs": [],
@@ -13,22 +32,59 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "funders",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "ethAmount",
+						"type": "uint256"
+					}
+				],
 				"name": "getConversionRate",
-				"outputs": [],
-				"stateMutability": "nonpayable",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
 				"inputs": [],
 				"name": "getPrice",
-				"outputs": [],
-				"stateMutability": "nonpayable",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
 				"inputs": [],
-				"name": "getversion",
+				"name": "getVersion",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -89,11 +145,11 @@
 			]
 		},
 		"FundMe.sol": {
-			"keccak256": "0x5f01751e9af71093e1bdaa8c5d600c0e923acf977aa41b87407657d98e5616c6",
+			"keccak256": "0xa932351f2a0479150a04329909531260986511ac4976a8776f8ed0b978479307",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://416aa68db674961730e0032430be984732b25ab6204f94c6a7afc9ad764156ee",
-				"dweb:/ipfs/QmdS3hzWnZJbLkmmwCyVYqZ7ieQsYbsSx5UG855mdUVwpT"
+				"bzz-raw://c2d2f248d6fb19fcc47d86ee9c5c56e73ec4a4db8c0acfc85f97510e8a685b8a",
+				"dweb:/ipfs/QmatMa8BzZFnQRRGbAdijtrn7bBgo9G9KXeZrA4fSGim7r"
 			]
 		}
 	},

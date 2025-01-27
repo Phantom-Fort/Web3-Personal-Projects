@@ -2,47 +2,79 @@
 
 pragma solidity ^0.8.19;
 
-import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import "./PriceConverter.sol";
+// constant, immutable {gas optimization}
+
+error NotOwner();
 
 contract FundMe {
-    uint256 public minimumUsd = 5 * 1e18; // 5 USD in wei (assuming 1 ETH = 2000 USD)
+    using PriceConverter for uint256;
+
+    uint256 public constant MINIMUM_USD = 5 * 1e18; // 5 USD in wei (assuming 1 ETH = 2000 USD)
 
     address[] public funders;
     mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
 
+   address public immutable i_owner;
+   
+   constructor() {
+        i_owner = msg.sender;
+    }
+    
     function fund() public payable {
-        // Allow users to send ETH
-        // Require a minimum of $5 worth of ETH
-        require(getConversionRate(msg.value) >= minimumUsd, "Didn't send enough ETH");
+        require(msg.value.getConversionRate() >= MINIMUM_USD, "didn't send enough ETH");
+        // require(getConversionRate(msg.value) >= minimumUsd, "Didn't send enough ETH");
         funders.push(msg.sender);
-        addressToAmountFunded[msg.sender] = addressToAmountFunded[msg.sender] * msg.value;
+        addressToAmountFunded[msg.sender] += msg.value;
     }
 
-    // function withdraw() public {}
+    function withdraw() public onlyOwner {
+        // for loop
+        // {1, 2, 3, 4}
+        for(uint256 funderIndex = 0; funderIndex < funders.length; funderIndex = funderIndex ++){
+            address funder = funders[funderIndex];
+            addressToAmountFunded[funder] = 0;
+        }
+        funders = new address[](0);
+        // withdraw the funds (3 ways)
 
-    function getPrice() public view returns (uint256) {
-        // Address of the Chainlink ETH/USD price feed on Sepolia testnet
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
-        
-        // Get the latest price data
-        (, int256 price,,,) = priceFeed.latestRoundData();
-        
-        // Convert the price to a uint256 and adjust for 8 decimal places
-        return uint256(price) * 1e10; // 1e10 to convert from 8 decimals to 18 decimals
+        // transfer
+        // send
+        // call
+
+        // call is the standardised way to withdraw. Check solidity by example for reason
+
+        // transfer
+        // msg.sender = address
+        // payable(msg.sender) = payable address
+        // payable(msg.sender).transfer(address(this).balance);
+
+        // send
+        // bool sendSuccess = payable(msg.sender).send(address(this).balance);
+        // require(sendSuccess, "Send failed");
+
+        // call
+        (bool callSuccess, ) = payable (msg.sender).call{value: address(this).balance}("");
+        require(callSuccess, "Call failed");
+    } 
+
+    modifier onlyOwner() {
+        // require(msg.sender == i_owner, "Sender is not owner!");
+        if (msg.sender != i_owner) {revert NotOwner(); } 
+        _;
     }
 
-    function getConversionRate(uint256 ethAmount) public view returns (uint256) {
-        // Get the current price of ETH in USD
-        uint256 ethPrice = getPrice();
-        
-        // Calculate the USD value of the given ETH amount
-        uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
-        
-        return ethAmountInUsd;
+
+    // what happens of someone sends money to this contract without calling the fund function
+
+    // receive {}
+    // fallback {}
+
+    receive() external payable {
+        fund();
     }
 
-    function getVersion() public view returns (uint256) {
-        // Get the version of the price feed contract
-        return AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306).version();
+    fallback() external payable {
+        fund();
     }
 }
